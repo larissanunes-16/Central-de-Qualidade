@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite não suporta enums nativos no Prisma; os valores abaixo seguem os enums
+// definidos em src/types (PapelUsuario, EstadoServico, OrigemServico, EstadoCard).
+
+model Secretaria {
+  id       String    @id @default(cuid())
+  nome     String    @unique
+  servicos Servico[]
+}
+
+model Usuario {
+  id     String       @id @default(cuid())
+  nome   String
+  email  String       @unique
+  papel  String @default("ANALISTA")
+}
+
+model Servico {
+  id            String        @id @default(cuid())
+  nome          String
+  secretariaId  String
+  secretaria    Secretaria    @relation(fields: [secretariaId], references: [id])
+  estado        String        @default("AGUARDANDO_ANALISE")
+  origem        String        @default("IMPORTADO")
+  versaoAtual   Int           @default(0)
+  criadoEm      DateTime      @default(now())
+  atualizadoEm  DateTime      @updatedAt
+
+  ciclos        Ciclo[]
+  comentarios   ComentarioOuvidoria[]
+}
+
+model Ciclo {
+  id                   String    @id @default(cuid())
+  servicoId            String
+  servico              Servico   @relation(fields: [servicoId], references: [id])
+  versao               Int
+  dataInicio           DateTime  @default(now())
+  dataConclusao        DateTime?
+  responsavelAnalise   String
+  contextoAdicional    String?
+  comparativoAntes     String?
+  comparativoDepois    String?
+  membrosParticipantes String? // json string[]
+  falhaProcessamento   Boolean   @default(false)
+  analiseIniciadaEm    DateTime?
+
+  documentos    Documento[]
+  relatorio     Relatorio?
+  cards         CardMelhoria[]
+
+  @@unique([servicoId, versao])
+}
+
+model Documento {
+  id            String   @id @default(cuid())
+  cicloId       String
+  ciclo         Ciclo    @relation(fields: [cicloId], references: [id])
+  nome          String
+  tipoMime      String
+  tamanhoBytes  Int
+  caminhoArquivo String
+  criadoEm      DateTime @default(now())
+}
+
+model ComentarioOuvidoria {
+  id         String   @id @default(cuid())
+  servicoId  String
+  servico    Servico  @relation(fields: [servicoId], references: [id])
+  texto      String
+  data       DateTime @default(now())
+}
+
+model Relatorio {
+  id                String   @id @default(cuid())
+  cicloId           String   @unique
+  ciclo             Ciclo    @relation(fields: [cicloId], references: [id])
+  jornada           String   // json
+  pontosFalha       String   // json
+  momentosVerdade   String   // json
+  matrizPriorizacao String   // json
+  recomendacoes     String   // json
+  layoutSugerido    String?  // json, apenas quando origem = CRIADO_NOVO
+  geradoEm          DateTime @default(now())
+  editadoManualmente Boolean @default(false)
+}
+
+model CardMelhoria {
+  id             String     @id @default(cuid())
+  cicloId        String
+  ciclo          Ciclo      @relation(fields: [cicloId], references: [id])
+  recomendacaoRef String
+  titulo         String
+  categoria      String
+  estado         String     @default("PENDENTE")
+  responsavel    String?
+  criadoEm       DateTime   @default(now())
+  concluidoEm    DateTime?
+}
