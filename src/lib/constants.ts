@@ -17,18 +17,27 @@ export const EXTENSOES_ACEITAS = [".pdf", ".docx", ".jpeg", ".jpg", ".png"];
 export const TAMANHO_MAXIMO_BYTES = 20 * 1024 * 1024; // RN-02: 20 MB
 
 export const ESTADOS_SERVICO = [
+  "PLANEJAMENTO",
+  "ANALISE_PREDITIVA",
   "AGUARDANDO_ANALISE",
   "EM_ANALISE",
   "EM_MELHORIA",
   "CONCLUIDO",
 ] as const;
 
+// Estados anteriores ao lançamento do serviço (fluxo de análise preditiva).
+export const ESTADOS_PRE_LANCAMENTO = ["PLANEJAMENTO", "ANALISE_PREDITIVA"] as const;
+
 export const ROTULOS_ESTADO_SERVICO: Record<string, string> = {
+  PLANEJAMENTO: "Planejamento",
+  ANALISE_PREDITIVA: "Análise preditiva",
   AGUARDANDO_ANALISE: "Aguardando análise",
   EM_ANALISE: "Em análise",
   EM_MELHORIA: "Em melhoria",
   CONCLUIDO: "Concluído",
 };
+
+export const CANAIS_SERVICO_OPCOES = ["Aplicativo", "Site", "Presencial", "Telefone", "WhatsApp"] as const;
 
 export const ROTULOS_ESTADO_CARD: Record<string, string> = {
   PENDENTE: "Pendente",

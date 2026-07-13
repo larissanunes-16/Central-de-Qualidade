@@ -65,6 +65,30 @@ export function assertPodeConcluirCiclo(params: { totalCards: number; cardsConcl
   }
 }
 
+export function assertPodeGerarAnalisePreditiva(params: {
+  nome?: string | null;
+  secretariaId?: string | null;
+  responsavelAnalise?: string | null;
+  objetivoServico?: string | null;
+  publicoAlvo?: string | null;
+  quantidadeEtapasPrevistas: number;
+}) {
+  if (!params.nome) throw new RegraNegocioError("Informe o nome do serviço.");
+  if (!params.secretariaId) throw new RegraNegocioError("Selecione a secretaria responsável.");
+  if (!params.responsavelAnalise) throw new RegraNegocioError("Informe o responsável pela análise.");
+  if (!params.objetivoServico) throw new RegraNegocioError("Descreva o objetivo do serviço.");
+  if (!params.publicoAlvo) throw new RegraNegocioError("Descreva o público-alvo do serviço.");
+  if (params.quantidadeEtapasPrevistas < 1) {
+    throw new RegraNegocioError("Informe ao menos 1 etapa prevista da jornada.");
+  }
+}
+
+export function assertPodeLancarServico(params: { relatorioExiste: boolean }) {
+  if (!params.relatorioExiste) {
+    throw new RegraNegocioError("A análise preditiva precisa ser gerada antes de lançar o serviço.");
+  }
+}
+
 export function calcularPercentualConclusao(totalCards: number, cardsConcluidos: number) {
   if (totalCards === 0) return 0;
   return Math.round((cardsConcluidos / totalCards) * 100);

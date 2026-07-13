@@ -4,8 +4,7 @@ import { cicloParaJson } from "@/lib/serialize";
 import { RegraNegocioError, assertPodeIniciarAnalise } from "@/lib/stateMachine";
 import { processarArquivos } from "@/lib/uploads";
 import { gerarRelatorioMock } from "@/lib/ai/mockAnalysis";
-import { gerarLayoutSugeridoMock } from "@/lib/ai/mockLayout";
-import type { EstadoServico, OrigemServico } from "@/types";
+import type { EstadoServico } from "@/types";
 
 const CICLO_INCLUDE = { documentos: true, relatorio: true, cards: true } as const;
 
@@ -44,7 +43,6 @@ export async function POST(request: Request) {
   const responsavelAnalise = String(formData.get("responsavelAnalise") ?? "").trim();
   const contextoAdicionalRaw = formData.get("contextoAdicional");
   const contextoAdicional = contextoAdicionalRaw ? String(contextoAdicionalRaw).trim() : null;
-  const origem: OrigemServico = formData.get("origem") === "CRIADO_NOVO" ? "CRIADO_NOVO" : "IMPORTADO";
   const iniciarAnalise = formData.get("iniciarAnalise") === "true";
   const arquivos = formData.getAll("arquivos").filter((item): item is File => item instanceof File && item.size > 0);
 
@@ -56,7 +54,7 @@ export async function POST(request: Request) {
 
   try {
     const servico = await db.servico.create({
-      data: { nome, secretariaId, origem, estado: "AGUARDANDO_ANALISE", versaoAtual: 0 },
+      data: { nome, secretariaId, origem: "IMPORTADO", estado: "AGUARDANDO_ANALISE", versaoAtual: 0 },
     });
 
     const ciclo = await db.ciclo.create({
@@ -86,8 +84,6 @@ export async function POST(request: Request) {
         comentariosOuvidoria: [],
         seed: ciclo.id,
       });
-      const layoutSugerido = origem === "CRIADO_NOVO" ? gerarLayoutSugeridoMock(nome, ciclo.id) : null;
-
       await db.ciclo.update({ where: { id: ciclo.id }, data: { analiseIniciadaEm: new Date() } });
       await db.relatorio.create({
         data: {
@@ -97,7 +93,6 @@ export async function POST(request: Request) {
           momentosVerdade: JSON.stringify(relatorioGerado.momentosVerdade),
           matrizPriorizacao: JSON.stringify(relatorioGerado.pontosFalha),
           recomendacoes: JSON.stringify(relatorioGerado.recomendacoes),
-          layoutSugerido: layoutSugerido ? JSON.stringify(layoutSugerido) : null,
         },
       });
       await db.servico.update({ where: { id: servico.id }, data: { estado: "EM_ANALISE" } });

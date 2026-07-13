@@ -43,6 +43,7 @@ model Ciclo {
   servicoId            String
   servico              Servico   @relation(fields: [servicoId], references: [id])
   versao               Int
+  tipo                 String    @default("DIAGNOSTICO") // PREDITIVO | DIAGNOSTICO
   dataInicio           DateTime  @default(now())
   dataConclusao        DateTime?
   responsavelAnalise   String
@@ -52,6 +53,13 @@ model Ciclo {
   membrosParticipantes String? // json string[]
   falhaProcessamento   Boolean   @default(false)
   analiseIniciadaEm    DateTime?
+
+  // Respostas do formulário guiado, usadas apenas quando tipo = PREDITIVO
+  objetivoServico       String?
+  publicoAlvo           String?
+  etapasPrevistas       String? // json string[]
+  canaisPrevistos       String? // json string[]
+  integracoesPrevistas  String?
 
   documentos    Documento[]
   relatorio     Relatorio?

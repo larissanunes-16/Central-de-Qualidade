@@ -5,6 +5,25 @@ function formatarData(data: string | null) {
 }
 
 export function TimelineCiclo({ ciclo }: { ciclo: Ciclo }) {
+  if (ciclo.tipo === "PREDITIVO") {
+    const etapasPreditivas = [
+      { label: "Planejamento", data: ciclo.dataInicio },
+      { label: "Análise preditiva", data: ciclo.relatorio?.geradoEm ?? null },
+      { label: "Lançado", data: ciclo.dataConclusao },
+    ];
+    return (
+      <div className="flex flex-wrap gap-4">
+        {etapasPreditivas.map((etapa) => (
+          <div key={etapa.label} className="flex items-center gap-2 text-xs text-slate-500">
+            <span className={etapa.data ? "text-violet-500" : "text-slate-300"}>✓</span>
+            <span className="font-medium text-slate-600">{etapa.label}</span>
+            <span>{formatarData(etapa.data)}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   const dataMelhoriaConcluida = ciclo.cards.length
     ? ciclo.cards.reduce<string | null>((maisRecente, card) => {
         if (!card.concluidoEm) return maisRecente;

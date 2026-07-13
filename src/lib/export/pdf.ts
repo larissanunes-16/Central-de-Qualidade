@@ -1,8 +1,9 @@
 import PDFDocument from "pdfkit";
-import type { DadosExportacaoRelatorio } from "./types";
+import { ROTULOS_EXPORTACAO_POR_TIPO, type DadosExportacaoRelatorio } from "./types";
 
 // RN-13: relatório exportável em PDF preservando as seções do template institucional.
 export async function gerarRelatorioPdf(dados: DadosExportacaoRelatorio): Promise<Buffer> {
+  const rotulos = ROTULOS_EXPORTACAO_POR_TIPO[dados.tipo ?? "DIAGNOSTICO"];
   const doc = new PDFDocument({ margin: 50 });
   const chunks: Buffer[] = [];
   doc.on("data", (chunk) => chunks.push(chunk));
@@ -11,7 +12,7 @@ export async function gerarRelatorioPdf(dados: DadosExportacaoRelatorio): Promis
     doc.on("end", () => resolve(Buffer.concat(chunks)));
   });
 
-  doc.fontSize(18).font("Helvetica-Bold").text("Relatório de Achados — Template SECTI");
+  doc.fontSize(18).font("Helvetica-Bold").text(rotulos.titulo);
   doc.moveDown(0.5);
   doc.fontSize(11).font("Helvetica").text(`Serviço: ${dados.servicoNome}`);
   doc.text(`Secretaria: ${dados.secretariaNome}`);
@@ -19,24 +20,24 @@ export async function gerarRelatorioPdf(dados: DadosExportacaoRelatorio): Promis
   doc.text(`Data de geração: ${dados.geradoEm.toLocaleDateString("pt-BR")}`);
   doc.moveDown();
 
-  secao(doc, "Jornada do usuário", () => {
+  secao(doc, rotulos.jornada, () => {
     dados.jornada.forEach((etapa) => {
-      doc.font("Helvetica-Bold").text(`• ${etapa.etapa} — ${etapa.emocao}${etapa.falha ? " (ponto de falha)" : ""}`);
+      doc.font("Helvetica-Bold").text(`• ${etapa.etapa} — ${etapa.emocao}${etapa.falha ? " (risco)" : ""}`);
       doc.font("Helvetica").text(etapa.descricao, { indent: 12 });
       doc.moveDown(0.3);
     });
   });
 
-  secao(doc, "Pontos de falha", () => {
+  secao(doc, rotulos.pontosFalha, () => {
     dados.pontosFalha.forEach((ponto) => {
       doc.font("Helvetica-Bold").text(`• ${ponto.titulo} [${ponto.categoria} · Prioridade ${ponto.prioridade}]`);
       doc.font("Helvetica").text(ponto.descricao, { indent: 12 });
-      doc.text(`Impacto: ${ponto.impacto} · Esforço: ${ponto.esforco}`, { indent: 12 });
+      doc.text(`Impacto: ${ponto.impacto} · ${rotulos.esforco}: ${ponto.esforco}`, { indent: 12 });
       doc.moveDown(0.3);
     });
   });
 
-  secao(doc, "Momentos da verdade", () => {
+  secao(doc, rotulos.momentosVerdade, () => {
     dados.momentosVerdade.forEach((momento) => {
       doc.font("Helvetica-Bold").text(`• ${momento.titulo} [Risco ${momento.nivelRisco}]`);
       doc.font("Helvetica").text(momento.descricao, { indent: 12 });
@@ -44,7 +45,7 @@ export async function gerarRelatorioPdf(dados: DadosExportacaoRelatorio): Promis
     });
   });
 
-  secao(doc, "Recomendações", () => {
+  secao(doc, rotulos.recomendacoes, () => {
     dados.recomendacoes.forEach((rec) => {
       doc.font("Helvetica-Bold").text(`• ${rec.titulo} [${rec.categoria} · Prioridade ${rec.prioridade}]`);
       doc.font("Helvetica").text(rec.descricao, { indent: 12 });

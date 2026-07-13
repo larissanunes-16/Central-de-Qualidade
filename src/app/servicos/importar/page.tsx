@@ -9,7 +9,7 @@ export default function ImportarServicoPage() {
           Faça o upload dos documentos do serviço (blueprint, jornada, roteiro de entrevistas) e preencha os metadados antes da análise.
         </p>
       </div>
-      <ImportacaoForm origem="IMPORTADO" />
+      <ImportacaoForm />
     </div>
   );
 }

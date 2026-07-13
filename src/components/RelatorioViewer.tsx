@@ -17,15 +17,37 @@ const EMOJI_EMOCAO: Record<string, string> = {
   Confuso: "😕",
 };
 
+const ROTULOS_POR_TIPO = {
+  DIAGNOSTICO: {
+    geradoPelaIa: "Relatório gerado automaticamente pela IA.",
+    jornada: "Jornada do usuário",
+    pontosFalha: "Matriz de priorização — pontos de falha",
+    esforco: "Esforço",
+    momentosVerdade: "Momentos da verdade",
+    recomendacoes: "Recomendações",
+  },
+  PREDITIVO: {
+    geradoPelaIa: "Análise de riscos previstos gerada automaticamente pela IA.",
+    jornada: "Jornada prevista",
+    pontosFalha: "Riscos previstos",
+    esforco: "Esforço de mitigação",
+    momentosVerdade: "Momentos críticos previstos",
+    recomendacoes: "Recomendações preventivas",
+  },
+} as const;
+
 export function RelatorioViewer({
   relatorio,
   editavel,
   onSalvar,
+  tipo = "DIAGNOSTICO",
 }: {
   relatorio: Relatorio;
   editavel: boolean;
   onSalvar?: (dados: Pick<Relatorio, "jornada" | "pontosFalha" | "momentosVerdade" | "recomendacoes">) => Promise<void>;
+  tipo?: "DIAGNOSTICO" | "PREDITIVO";
 }) {
+  const rotulos = ROTULOS_POR_TIPO[tipo];
   const [modoEdicao, setModoEdicao] = useState(false);
   const [jornada, setJornada] = useState(relatorio.jornada);
   const [pontosFalha, setPontosFalha] = useState(relatorio.pontosFalha);
@@ -46,7 +68,7 @@ export function RelatorioViewer({
       {editavel && (
         <div className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-3">
           <p className="text-sm text-slate-500">
-            {relatorio.editadoManualmente ? "Este relatório já foi editado manualmente." : "Relatório gerado automaticamente pela IA."}
+            {relatorio.editadoManualmente ? "Este relatório já foi editado manualmente." : rotulos.geradoPelaIa}
           </p>
           {modoEdicao ? (
             <div className="flex gap-2">
@@ -66,7 +88,7 @@ export function RelatorioViewer({
       )}
 
       <section>
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">Jornada do usuário</h3>
+        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">{rotulos.jornada}</h3>
         <div className="flex gap-3 overflow-x-auto pb-2">
           {jornada.map((etapa, index) => (
             <div
@@ -100,7 +122,7 @@ export function RelatorioViewer({
       </section>
 
       <section>
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">Matriz de priorização — pontos de falha</h3>
+        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">{rotulos.pontosFalha}</h3>
         <div className="flex flex-col gap-3">
           {pontosFalha.map((ponto, index) => (
             <div key={ponto.id} className="rounded-xl border border-slate-200 p-4">
@@ -124,7 +146,7 @@ export function RelatorioViewer({
                 <p className="text-sm text-slate-600">{ponto.descricao}</p>
               )}
               <p className="mt-2 text-xs text-slate-400">
-                Impacto: <strong>{ponto.impacto}</strong> · Esforço: <strong>{ponto.esforco}</strong>
+                Impacto: <strong>{ponto.impacto}</strong> · {rotulos.esforco}: <strong>{ponto.esforco}</strong>
               </p>
             </div>
           ))}
@@ -132,7 +154,7 @@ export function RelatorioViewer({
       </section>
 
       <section>
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">Momentos da verdade</h3>
+        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">{rotulos.momentosVerdade}</h3>
         <div className="grid gap-3 md:grid-cols-2">
           {momentosVerdade.map((momento, index) => (
             <div key={index} className="rounded-xl border border-slate-200 p-4">
@@ -154,7 +176,7 @@ export function RelatorioViewer({
       </section>
 
       <section>
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">Recomendações</h3>
+        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">{rotulos.recomendacoes}</h3>
         <div className="flex flex-col gap-3">
           {recomendacoes.map((rec, index) => (
             <div key={rec.id} className="rounded-xl border border-slate-200 p-4">

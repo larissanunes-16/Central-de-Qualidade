@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { gerarRelatorioMock } from "../src/lib/ai/mockAnalysis";
+import { gerarAnalisePreditivaMock } from "../src/lib/ai/mockPredictiveAnalysis";
+import { gerarLayoutSugeridoMock } from "../src/lib/ai/mockLayout";
 import { SECRETARIAS_PADRAO } from "../src/lib/constants";
 
 const db = new PrismaClient();
@@ -174,6 +176,64 @@ async function main() {
       }),
     ),
   );
+
+  // 5. Serviço novo em planejamento: formulário guiado ainda em rascunho, sem análise gerada.
+  const servicoPlanejamento = await db.servico.create({
+    data: { nome: "Poda Programada de Árvores via App", secretariaId: secti.id, origem: "CRIADO_NOVO", estado: "PLANEJAMENTO", versaoAtual: 0 },
+  });
+  await db.ciclo.create({
+    data: {
+      servicoId: servicoPlanejamento.id,
+      versao: 1,
+      tipo: "PREDITIVO",
+      responsavelAnalise: carlos.nome,
+      objetivoServico: "Permitir que moradores solicitem a poda de árvores em vias públicas sem precisar ir a uma unidade de atendimento.",
+      publicoAlvo: "Moradores do Recife com árvores próximas à residência que oferecem risco ou obstrução.",
+      etapasPrevistas: JSON.stringify(["Solicitação pelo app", "Triagem técnica", "Agendamento da equipe", "Execução da poda", "Confirmação de conclusão"]),
+      canaisPrevistos: JSON.stringify(["Aplicativo", "Telefone"]),
+    },
+  });
+
+  // 6. Serviço novo com análise preditiva já gerada, pronto para ser lançado.
+  const servicoPreditivo = await db.servico.create({
+    data: { nome: "Emissão Digital de Alvará de Evento", secretariaId: fazenda.id, origem: "CRIADO_NOVO", estado: "ANALISE_PREDITIVA", versaoAtual: 0 },
+  });
+  const cicloPreditivo = await db.ciclo.create({
+    data: {
+      servicoId: servicoPreditivo.id,
+      versao: 1,
+      tipo: "PREDITIVO",
+      responsavelAnalise: ana.nome,
+      analiseIniciadaEm: new Date(),
+      objetivoServico: "Permitir que organizadores de eventos solicitem o alvará de funcionamento inteiramente online.",
+      publicoAlvo: "Produtores culturais e organizadores de eventos de pequeno e médio porte.",
+      etapasPrevistas: JSON.stringify(["Cadastro do evento", "Envio de documentação", "Análise de segurança", "Pagamento da taxa", "Emissão do alvará"]),
+      canaisPrevistos: JSON.stringify(["Site", "Aplicativo"]),
+      integracoesPrevistas: "Integração com o sistema de pagamento municipal e com o Corpo de Bombeiros.",
+    },
+  });
+  const relatorioPreditivo = await gerarAnalisePreditivaMock({
+    servicoNome: servicoPreditivo.nome,
+    secretariaNome: fazenda.nome,
+    objetivoServico: "Permitir que organizadores de eventos solicitem o alvará de funcionamento inteiramente online.",
+    publicoAlvo: "Produtores culturais e organizadores de eventos de pequeno e médio porte.",
+    etapasPrevistas: ["Cadastro do evento", "Envio de documentação", "Análise de segurança", "Pagamento da taxa", "Emissão do alvará"],
+    canaisPrevistos: ["Site", "Aplicativo"],
+    integracoesPrevistas: "Integração com o sistema de pagamento municipal e com o Corpo de Bombeiros.",
+    seed: cicloPreditivo.id,
+  });
+  const layoutSugeridoPreditivo = gerarLayoutSugeridoMock(servicoPreditivo.nome, cicloPreditivo.id);
+  await db.relatorio.create({
+    data: {
+      cicloId: cicloPreditivo.id,
+      jornada: JSON.stringify(relatorioPreditivo.jornada),
+      pontosFalha: JSON.stringify(relatorioPreditivo.pontosFalha),
+      momentosVerdade: JSON.stringify(relatorioPreditivo.momentosVerdade),
+      matrizPriorizacao: JSON.stringify(relatorioPreditivo.pontosFalha),
+      recomendacoes: JSON.stringify(relatorioPreditivo.recomendacoes),
+      layoutSugerido: JSON.stringify(layoutSugeridoPreditivo),
+    },
+  });
 
   console.log("Seed concluído.");
   console.log({ secti: secti.nome, secretarias: secretarias.length, usuarios: 3 });

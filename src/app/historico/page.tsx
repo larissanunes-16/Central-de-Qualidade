@@ -74,10 +74,16 @@ export default function HistoricoPage() {
                     {ciclo.servico.secretaria.nome} · v{ciclo.versao}
                   </p>
                 </div>
-                <span className="badge bg-emerald-100 text-emerald-700">Concluído</span>
+                <span className={clsx("badge", ciclo.tipo === "PREDITIVO" ? "bg-violet-100 text-violet-700" : "bg-emerald-100 text-emerald-700")}>
+                  {ciclo.tipo === "PREDITIVO" ? "Lançado" : "Concluído"}
+                </span>
               </div>
               <TimelineCiclo ciclo={ciclo} />
-              <ComparativoAntesDepois antes={ciclo.comparativoAntes} depois={ciclo.comparativoDepois} />
+              {ciclo.tipo === "PREDITIVO" ? (
+                <p className="rounded-lg bg-violet-50 px-3 py-2 text-xs text-violet-700">Ciclo de planejamento — análise de riscos previstos antes do lançamento.</p>
+              ) : (
+                <ComparativoAntesDepois antes={ciclo.comparativoAntes} depois={ciclo.comparativoDepois} />
+              )}
             </Link>
           ))}
         </div>

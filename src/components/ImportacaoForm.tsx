@@ -7,12 +7,11 @@ import type { Documento, Secretaria, ServicoDetalhado } from "@/types";
 
 type Props = {
   servicoId?: string;
-  origem: "IMPORTADO" | "CRIADO_NOVO";
 };
 
 type Erros = { nome?: string; secretariaId?: string; responsavelAnalise?: string; arquivos?: string };
 
-export function ImportacaoForm({ servicoId, origem }: Props) {
+export function ImportacaoForm({ servicoId }: Props) {
   const router = useRouter();
   const [secretarias, setSecretarias] = useState<Secretaria[]>([]);
   const [nome, setNome] = useState("");
@@ -27,7 +26,6 @@ export function ImportacaoForm({ servicoId, origem }: Props) {
   const [enviando, setEnviando] = useState<"rascunho" | "analise" | null>(null);
   const [erroGeral, setErroGeral] = useState<string | null>(null);
   const [nomeDuplicado, setNomeDuplicado] = useState(false);
-  const [origemAtual, setOrigemAtual] = useState(origem);
 
   useEffect(() => {
     fetch("/api/secretarias").then((res) => res.json()).then(setSecretarias);
@@ -44,7 +42,6 @@ export function ImportacaoForm({ servicoId, origem }: Props) {
         setContextoAdicional(data.cicloAtual?.contextoAdicional ?? "");
         setDocumentosExistentes(data.cicloAtual?.documentos ?? []);
         setComentarios(data.comentariosOuvidoria);
-        setOrigemAtual(data.origem);
       });
   }, [servicoId]);
 
@@ -127,7 +124,6 @@ export function ImportacaoForm({ servicoId, origem }: Props) {
     formData.append("secretariaId", secretariaId);
     formData.append("responsavelAnalise", responsavelAnalise.trim());
     formData.append("contextoAdicional", contextoAdicional.trim());
-    formData.append("origem", origem);
     formData.append("iniciarAnalise", String(iniciar));
     arquivosNovos.forEach((arquivo) => formData.append("arquivos", arquivo));
     return formData;
@@ -173,12 +169,6 @@ export function ImportacaoForm({ servicoId, origem }: Props) {
 
   return (
     <div className="flex max-w-2xl flex-col gap-6">
-      {origemAtual === "CRIADO_NOVO" && (
-        <p className="rounded-lg bg-brand-50 px-4 py-3 text-sm text-brand-700">
-          Este serviço está sendo criado do zero — além da análise de melhoria, o relatório incluirá uma sugestão de layout inicial com boas práticas de design.
-        </p>
-      )}
-
       <div className="flex flex-col gap-1">
         <label className="text-sm font-medium text-slate-700">Nome do serviço *</label>
         <input

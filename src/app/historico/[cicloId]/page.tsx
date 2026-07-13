@@ -37,10 +37,16 @@ export default function HistoricoDetalhePage({ params }: { params: { cicloId: st
         <TimelineCiclo ciclo={ciclo} />
       </div>
 
-      <div>
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Comparativo antes/depois</p>
-        <ComparativoAntesDepois antes={ciclo.comparativoAntes} depois={ciclo.comparativoDepois} />
-      </div>
+      {ciclo.tipo === "PREDITIVO" ? (
+        <div className="rounded-lg bg-violet-50 px-4 py-3 text-sm text-violet-700">
+          Este foi o ciclo de planejamento deste serviço, antes do lançamento — não há comparativo antes/depois aqui, ele aparece no ciclo diagnóstico seguinte.
+        </div>
+      ) : (
+        <div>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Comparativo antes/depois</p>
+          <ComparativoAntesDepois antes={ciclo.comparativoAntes} depois={ciclo.comparativoDepois} />
+        </div>
+      )}
 
       <div>
         <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Membros participantes</p>
@@ -50,7 +56,9 @@ export default function HistoricoDetalhePage({ params }: { params: { cicloId: st
       {ciclo.relatorio && (
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Relatório de achados original</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+              {ciclo.tipo === "PREDITIVO" ? "Análise de riscos previstos original" : "Relatório de achados original"}
+            </p>
             <div className="flex gap-2">
               <a href={`/api/relatorios/${ciclo.relatorio.id}/exportar?formato=pdf`} className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50">
                 Exportar PDF
@@ -60,7 +68,7 @@ export default function HistoricoDetalhePage({ params }: { params: { cicloId: st
               </a>
             </div>
           </div>
-          <RelatorioViewer relatorio={ciclo.relatorio} editavel={false} />
+          <RelatorioViewer relatorio={ciclo.relatorio} editavel={false} tipo={ciclo.tipo === "PREDITIVO" ? "PREDITIVO" : "DIAGNOSTICO"} />
         </div>
       )}
     </div>

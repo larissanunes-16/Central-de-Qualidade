@@ -55,3 +55,16 @@ export type EntradaAnalise = {
   seed: string;
   incluirLayoutSugerido?: boolean;
 };
+
+// Entrada do gerador de análise preditiva: parte da descrição de um serviço
+// ainda inexistente (formulário guiado), não de evidências reais.
+export type EntradaAnalisePreditiva = {
+  servicoNome: string;
+  secretariaNome: string;
+  objetivoServico: string;
+  publicoAlvo: string;
+  etapasPrevistas: string[];
+  canaisPrevistos: string[];
+  integracoesPrevistas?: string | null;
+  seed: string;
+};

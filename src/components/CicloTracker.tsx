@@ -1,7 +1,13 @@
 import clsx from "clsx";
+import { ESTADOS_PRE_LANCAMENTO } from "@/lib/constants";
 import type { EstadoServico } from "@/types";
 
-const ETAPAS: { estado: EstadoServico; label: string }[] = [
+const ETAPAS_PRE_LANCAMENTO: { estado: EstadoServico; label: string }[] = [
+  { estado: "PLANEJAMENTO", label: "Planejamento" },
+  { estado: "ANALISE_PREDITIVA", label: "Análise preditiva" },
+];
+
+const ETAPAS_POS_LANCAMENTO: { estado: EstadoServico; label: string }[] = [
   { estado: "AGUARDANDO_ANALISE", label: "Importação" },
   { estado: "EM_ANALISE", label: "Análise" },
   { estado: "EM_MELHORIA", label: "Melhoria" },
@@ -9,11 +15,13 @@ const ETAPAS: { estado: EstadoServico; label: string }[] = [
 ];
 
 export function CicloTracker({ estado, compacto }: { estado: EstadoServico; compacto?: boolean }) {
-  const indiceAtual = ETAPAS.findIndex((e) => e.estado === estado);
+  const preLancamento = (ESTADOS_PRE_LANCAMENTO as readonly string[]).includes(estado);
+  const etapas = preLancamento ? ETAPAS_PRE_LANCAMENTO : ETAPAS_POS_LANCAMENTO;
+  const indiceAtual = etapas.findIndex((e) => e.estado === estado);
 
   return (
     <div className="flex items-center gap-1">
-      {ETAPAS.map((etapa, index) => {
+      {etapas.map((etapa, index) => {
         const status =
           estado === "CONCLUIDO" || index < indiceAtual
             ? "concluida"
@@ -27,12 +35,14 @@ export function CicloTracker({ estado, compacto }: { estado: EstadoServico; comp
               className={clsx(
                 "rounded-full",
                 compacto ? "h-2 w-2" : "h-2.5 w-2.5",
-                status === "concluida" && "bg-emerald-500",
-                status === "ativa" && "bg-brand-500",
+                status === "concluida" && (preLancamento ? "bg-violet-500" : "bg-emerald-500"),
+                status === "ativa" && (preLancamento ? "bg-violet-500" : "bg-brand-500"),
                 status === "futura" && "bg-slate-300",
               )}
             />
-            {index < ETAPAS.length - 1 && <div className={clsx("h-px w-3", status === "concluida" ? "bg-emerald-300" : "bg-slate-200")} />}
+            {index < etapas.length - 1 && (
+              <div className={clsx("h-px w-3", status === "concluida" ? (preLancamento ? "bg-violet-300" : "bg-emerald-300") : "bg-slate-200")} />
+            )}
           </div>
         );
       })}

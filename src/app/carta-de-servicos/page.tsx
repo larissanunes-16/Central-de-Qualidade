@@ -12,6 +12,8 @@ import type { EstadoServico, Secretaria, Servico } from "@/types";
 
 const FILTROS_ESTADO: { label: string; valor: EstadoServico | "TODOS" }[] = [
   { label: "Todos", valor: "TODOS" },
+  { label: ROTULOS_ESTADO_SERVICO.PLANEJAMENTO, valor: "PLANEJAMENTO" },
+  { label: ROTULOS_ESTADO_SERVICO.ANALISE_PREDITIVA, valor: "ANALISE_PREDITIVA" },
   { label: ROTULOS_ESTADO_SERVICO.AGUARDANDO_ANALISE, valor: "AGUARDANDO_ANALISE" },
   { label: ROTULOS_ESTADO_SERVICO.EM_ANALISE, valor: "EM_ANALISE" },
   { label: ROTULOS_ESTADO_SERVICO.EM_MELHORIA, valor: "EM_MELHORIA" },

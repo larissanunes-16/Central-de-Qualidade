@@ -15,11 +15,14 @@ export async function GET(request: Request, { params }: { params: { id: string }
   });
   if (!relatorio) return NextResponse.json({ erro: "Relatório não encontrado." }, { status: 404 });
 
+  const tipo = relatorio.ciclo.tipo === "PREDITIVO" ? "PREDITIVO" : "DIAGNOSTICO";
+
   const dados: DadosExportacaoRelatorio = {
     servicoNome: relatorio.ciclo.servico.nome,
     secretariaNome: relatorio.ciclo.servico.secretaria.nome,
     versaoCiclo: relatorio.ciclo.versao,
     geradoEm: relatorio.geradoEm,
+    tipo,
     jornada: JSON.parse(relatorio.jornada),
     pontosFalha: JSON.parse(relatorio.pontosFalha),
     momentosVerdade: JSON.parse(relatorio.momentosVerdade),
@@ -27,7 +30,8 @@ export async function GET(request: Request, { params }: { params: { id: string }
     layoutSugerido: relatorio.layoutSugerido ? JSON.parse(relatorio.layoutSugerido) : undefined,
   };
 
-  const nomeArquivo = `relatorio-achados-${relatorio.ciclo.servico.nome.replace(/[^a-zA-Z0-9]+/g, "-")}-v${relatorio.ciclo.versao}`;
+  const prefixoArquivo = tipo === "PREDITIVO" ? "analise-riscos" : "relatorio-achados";
+  const nomeArquivo = `${prefixoArquivo}-${relatorio.ciclo.servico.nome.replace(/[^a-zA-Z0-9]+/g, "-")}-v${relatorio.ciclo.versao}`;
 
   if (formato === "docx") {
     const buffer = await gerarRelatorioDocx(dados);

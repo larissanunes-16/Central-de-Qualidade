@@ -48,15 +48,31 @@ Usuários já cadastrados (seed):
 - Use os filtros por estado (abas) e por secretaria (pills).
 - Clique em um card para abrir o painel lateral com detalhes.
 
-### 3.2 Criar um serviço novo (`/servicos/novo`)
-- Preencha nome, secretaria e responsável.
-- Faça upload de um arquivo PDF/DOCX/JPEG/PNG (até 20 MB).
+### 3.2 Importar um serviço que já existe (`/servicos/novo` → "Este serviço já existe")
+- Clique em **"Novo serviço"** na Carta de Serviços — abre a pergunta
+  "este serviço já existe ou está sendo criado?".
+- Escolha **"Este serviço já existe"** → cai no formulário de importação.
+- Preencha nome, secretaria e responsável, faça upload de um arquivo
+  PDF/DOCX/JPEG/PNG (até 20 MB).
 - Teste "Salvar rascunho" (deve voltar para a Carta de Serviços com o
   serviço em "Aguardando análise").
 - Crie outro e clique em **"Iniciar análise com IA"** — deve aparecer a
   barra de progresso e, em seguida, o Relatório de Achados completo
-  (jornada, pontos de falha, momentos da verdade, recomendações e, como
-  este veio de "Novo serviço", também um layout inicial sugerido).
+  (jornada, pontos de falha, momentos da verdade, recomendações).
+
+### 3.2b Planejar um serviço que ainda não existe (`/servicos/novo` → "Está sendo criado")
+- Na mesma pergunta, escolha **"Este serviço está sendo criado"** → cai
+  no formulário guiado (objetivo, público-alvo, etapas previstas da
+  jornada, canais, integrações — sem upload de documentos).
+- Teste "Salvar rascunho" (serviço fica em **Planejamento**).
+- Em outro, preencha tudo e clique em **"Gerar análise preditiva"** —
+  a IA gera uma **Análise de Riscos Previstos** (riscos previstos em vez
+  de pontos de falha, jornada prevista em vez de observada, mas com o
+  mesmo layout sugerido de antes).
+- Clique em **"Lançar serviço"** e confirme no modal — o ciclo preditivo
+  é arquivado (aparece no Histórico com o selo "Lançado") e o serviço
+  volta para "Aguardando análise" já num ciclo diagnóstico novo (v2),
+  seguindo o fluxo normal de importação de evidências a partir daqui.
 
 ### 3.3 Relatório de Achados
 - Teste **Exportar PDF** e **Exportar Word** (arquivos devem abrir
@@ -82,6 +98,10 @@ Usuários já cadastrados (seed):
   comparativo antes/depois (fundo vermelho/verde).
 - Abra o card para ver o relatório original (somente leitura, sem botão
   de editar) e exporte de novo em PDF/Word.
+- Um serviço que passou pelo fluxo preditivo (3.2b) aparece com o selo
+  violeta "Lançado" e a linha do tempo Planejamento → Análise preditiva
+  → Lançado, sem comparativo antes/depois (isso só existe no ciclo
+  diagnóstico seguinte, quando ele for concluído).
 
 ### 3.6 Equipe e Configurações
 - Em `/equipe`, adicione um novo membro (Analista ou Gestor).

@@ -2,9 +2,16 @@ export type Secretaria = { id: string; nome: string };
 
 export type Usuario = { id: string; nome: string; email: string; papel: "ANALISTA" | "GESTOR" };
 
-export type EstadoServico = "AGUARDANDO_ANALISE" | "EM_ANALISE" | "EM_MELHORIA" | "CONCLUIDO";
+export type EstadoServico =
+  | "PLANEJAMENTO"
+  | "ANALISE_PREDITIVA"
+  | "AGUARDANDO_ANALISE"
+  | "EM_ANALISE"
+  | "EM_MELHORIA"
+  | "CONCLUIDO";
 export type EstadoCard = "PENDENTE" | "EM_ANDAMENTO" | "CONCLUIDO";
 export type OrigemServico = "IMPORTADO" | "CRIADO_NOVO";
+export type TipoCiclo = "PREDITIVO" | "DIAGNOSTICO";
 
 export type Documento = { id: string; nome: string; tipoMime: string; tamanhoBytes: number; criadoEm: string };
 
@@ -47,6 +54,7 @@ export type CardMelhoria = {
 export type Ciclo = {
   id: string;
   versao: number;
+  tipo: TipoCiclo;
   dataInicio: string;
   dataConclusao: string | null;
   responsavelAnalise: string;
@@ -56,6 +64,11 @@ export type Ciclo = {
   membrosParticipantes: string[];
   analiseIniciadaEm: string | null;
   falhaProcessamento: boolean;
+  objetivoServico: string | null;
+  publicoAlvo: string | null;
+  etapasPrevistas: string[];
+  canaisPrevistos: string[];
+  integracoesPrevistas: string | null;
   documentos: Documento[];
   relatorio: Relatorio | null;
   cards: CardMelhoria[];

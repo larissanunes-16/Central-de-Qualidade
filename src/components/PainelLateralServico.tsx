@@ -53,7 +53,11 @@ export function PainelLateralServico({ servicoId, onFechar }: { servicoId: strin
             {ciclo && (
               <div className="rounded-lg bg-slate-50 p-3 text-sm text-slate-600">
                 <p>Responsável pela análise: {ciclo.responsavelAnalise || "—"}</p>
-                <p>Documentos importados: {ciclo.documentos.length}</p>
+                {ciclo.tipo === "PREDITIVO" ? (
+                  <p>Etapas previstas: {ciclo.etapasPrevistas.length}</p>
+                ) : (
+                  <p>Documentos importados: {ciclo.documentos.length}</p>
+                )}
                 {servico.estado === "EM_MELHORIA" && (
                   <p>Progresso das melhorias: {ciclo.percentualConclusao}% ({ciclo.cardsConcluidos}/{ciclo.totalCards})</p>
                 )}
@@ -62,7 +66,9 @@ export function PainelLateralServico({ servicoId, onFechar }: { servicoId: strin
 
             {ciclo?.relatorio && ciclo.relatorio.pontosFalha.length > 0 && (
               <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Pontos de falha identificados</p>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                  {ciclo.tipo === "PREDITIVO" ? "Riscos previstos identificados" : "Pontos de falha identificados"}
+                </p>
                 <ul className="flex flex-col gap-2">
                   {ciclo.relatorio.pontosFalha.map((ponto) => (
                     <li key={ponto.id} className="rounded-lg border border-slate-200 p-2 text-sm">
@@ -77,6 +83,16 @@ export function PainelLateralServico({ servicoId, onFechar }: { servicoId: strin
             )}
 
             <div className="flex flex-col gap-2">
+              {servico.estado === "PLANEJAMENTO" && (
+                <Link href={`/servicos/${servico.id}/planejamento`} className="rounded-lg bg-violet-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-violet-700">
+                  Continuar planejamento
+                </Link>
+              )}
+              {servico.estado === "ANALISE_PREDITIVA" && (
+                <Link href={`/servicos/${servico.id}/analise-preditiva`} className="rounded-lg bg-violet-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-violet-700">
+                  Ver análise preditiva
+                </Link>
+              )}
               {servico.estado === "AGUARDANDO_ANALISE" && (
                 <Link href={`/servicos/${servico.id}/importar`} className="rounded-lg bg-brand-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-brand-700">
                   Ir para importação
