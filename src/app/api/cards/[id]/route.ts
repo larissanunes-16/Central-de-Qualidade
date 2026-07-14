@@ -1,12 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { moverCardSchema } from "@/lib/validation";
-import {
-  RegraNegocioError,
-  assertCardNaoRevertido,
-  assertPodeMoverCardParaAndamento,
-  assertPodeMoverCardParaConcluido,
-} from "@/lib/stateMachine";
+import { RegraNegocioError, assertCardNaoRevertido, assertPodeMoverCardParaAndamento } from "@/lib/stateMachine";
 import { cardParaJson } from "@/lib/serialize";
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
@@ -30,13 +25,8 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     if (parsed.data.estado === "EM_ANDAMENTO") {
       assertPodeMoverCardParaAndamento({ responsavel: responsavelFinal });
     }
-    if (parsed.data.estado === "CONCLUIDO") {
-      assertPodeMoverCardParaConcluido({
-        responsavelCard: responsavelFinal,
-        usuarioAtualNome: usuarioAtual.nome,
-        usuarioAtualPapel: usuarioAtual.papel,
-      });
-    }
+    // De "Em andamento" para "Concluído": tanto analistas quanto gestores podem
+    // fazer essa mudança — não é mais restrito ao responsável atribuído.
 
     const atualizado = await db.cardMelhoria.update({
       where: { id: card.id },

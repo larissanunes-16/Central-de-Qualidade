@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { salvarComparativoSchema } from "@/lib/validation";
-import { RegraNegocioError, assertPodeConcluirCiclo } from "@/lib/stateMachine";
+import { RegraNegocioError, assertPodeConcluirCiclo, assertUsuarioEhGestor } from "@/lib/stateMachine";
 
 // RN-21/22/23: só conclui com 100% dos cards concluídos; registra data, versão e membros.
 export async function POST(request: Request, { params }: { params: { id: string } }) {
@@ -18,11 +18,15 @@ export async function POST(request: Request, { params }: { params: { id: string 
   });
   if (!ciclo) return NextResponse.json({ erro: "Ciclo não encontrado." }, { status: 404 });
 
+  const usuarioAtual = usuarioAtualId ? await db.usuario.findUnique({ where: { id: usuarioAtualId } }) : null;
+
   try {
+    // Apenas um gestor pode concluir o ciclo (o card em si pode ser concluído por qualquer analista ou gestor).
+    assertUsuarioEhGestor({ papel: usuarioAtual?.papel });
+
     const cardsConcluidos = ciclo.cards.filter((c) => c.estado === "CONCLUIDO").length;
     assertPodeConcluirCiclo({ totalCards: ciclo.cards.length, cardsConcluidos });
 
-    const usuarioAtual = usuarioAtualId ? await db.usuario.findUnique({ where: { id: usuarioAtualId } }) : null;
     const membros = new Set<string>([ciclo.responsavelAnalise]);
     ciclo.cards.forEach((c) => c.responsavel && membros.add(c.responsavel));
     if (usuarioAtual) membros.add(usuarioAtual.nome);

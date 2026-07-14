@@ -38,19 +38,6 @@ export function assertPodeMoverCardParaAndamento(params: { responsavel: string |
   }
 }
 
-export function assertPodeMoverCardParaConcluido(params: {
-  responsavelCard: string | null | undefined;
-  usuarioAtualNome: string;
-  usuarioAtualPapel: string;
-}) {
-  // RN-18: apenas o responsável pelo card ou um gestor podem concluí-lo.
-  const ehResponsavel = params.responsavelCard === params.usuarioAtualNome;
-  const ehGestor = params.usuarioAtualPapel === "GESTOR";
-  if (!ehResponsavel && !ehGestor) {
-    throw new RegraNegocioError("Apenas o responsável pelo card ou um gestor podem concluí-lo.");
-  }
-}
-
 export function assertCardNaoRevertido(params: { estadoAtual: string; novoEstado: string }) {
   // Estado final: Concluído não pode ser revertido no MVP.
   if (params.estadoAtual === "CONCLUIDO" && params.novoEstado !== "CONCLUIDO") {
@@ -62,6 +49,13 @@ export function assertPodeConcluirCiclo(params: { totalCards: number; cardsConcl
   // RN-21: o ciclo só pode ser concluído quando 100% dos cards estiverem concluídos.
   if (params.totalCards === 0 || params.cardsConcluidos < params.totalCards) {
     throw new RegraNegocioError("Todos os cards de melhoria precisam estar concluídos para encerrar o ciclo.");
+  }
+}
+
+export function assertUsuarioEhGestor(params: { papel: string | null | undefined }) {
+  // Apenas um gestor pode concluir o ciclo (arquivar e gerar o comparativo antes/depois).
+  if (params.papel !== "GESTOR") {
+    throw new RegraNegocioError("Apenas um gestor pode concluir o ciclo.");
   }
 }
 

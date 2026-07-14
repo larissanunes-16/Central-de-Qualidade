@@ -10,7 +10,8 @@ import type { CardMelhoria, Ciclo, EstadoCard, ServicoDetalhado } from "@/types"
 
 export default function MaterializacaoPage({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const { usuarioAtualId } = useUsuarioAtual();
+  const { usuarioAtualId, usuarioAtual } = useUsuarioAtual();
+  const ehGestor = usuarioAtual?.papel === "GESTOR";
   const [servico, setServico] = useState<ServicoDetalhado | null>(null);
   const [ciclo, setCiclo] = useState<Ciclo | null>(null);
   const [cards, setCards] = useState<CardMelhoria[]>([]);
@@ -122,10 +123,15 @@ export default function MaterializacaoPage({ params }: { params: { id: string } 
         </div>
         <div className="flex items-center gap-4">
           <ProgressRing percentual={percentual} />
-          {percentual === 100 && (
+          {percentual === 100 && ehGestor && (
             <button onClick={() => setModalAberto(true)} className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
               Concluir ciclo
             </button>
+          )}
+          {percentual === 100 && !ehGestor && (
+            <p className="max-w-[220px] text-right text-xs text-slate-400">
+              Todos os cards estão concluídos. Apenas um gestor pode concluir o ciclo.
+            </p>
           )}
         </div>
       </div>

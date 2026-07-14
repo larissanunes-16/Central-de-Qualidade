@@ -85,12 +85,14 @@ Usuários já cadastrados (seed):
   deve ser bloqueado com uma mensagem de erro.
 - Clique em "Atribuir responsável", digite um nome e confirme.
 - Agora arraste o mesmo card para "Em andamento" — deve funcionar.
-- Troque o "Usuário atual" para alguém que **não** é o responsável do
-  card e tente movê-lo para "Concluído" — deve ser bloqueado (só o
-  responsável ou um Gestor podem concluir).
-- Troque para o responsável (ou para a Fernanda, que é Gestora) e
-  conclua o card.
-- Repita até 100% dos cards — o botão **"Concluir ciclo"** deve aparecer.
+- Troque o "Usuário atual" para qualquer analista (não precisa ser o
+  responsável do card) e mova-o para "Concluído" — agora funciona para
+  qualquer analista ou gestor, não só para o responsável atribuído.
+- Com o "Usuário atual" em um **Analista**, chegue a 100% dos cards —
+  o botão "Concluir ciclo" não aparece; em vez disso, uma mensagem
+  avisa que só um gestor pode concluir o ciclo.
+- Troque o "Usuário atual" para a **Fernanda (Gestora)** — o botão
+  **"Concluir ciclo"** aparece.
 - No modal, clique em **"Gerar com IA"** — os campos Antes/Depois são
   preenchidos automaticamente a partir dos pontos de falha do relatório
   e das melhorias concluídas neste ciclo. O texto continua editável;
