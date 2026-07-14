@@ -112,6 +112,12 @@ Usuários já cadastrados (seed):
 - Em `/equipe`, adicione um novo membro (Analista ou Gestor).
 - Em `/configuracoes`, confira a lista de secretarias cadastradas.
 
+### 3.7 Dashboard da Ouvidoria 4.0 (`/ouvidoria/dashboard`)
+- Só o layout por enquanto — filtros, mini-gráficos por mês, cards de KPI,
+  gráficos de natureza/sentimento/sigilo e a tabela com abas (Órgão,
+  Serviço, Categoria, Grupo, Público-alvo) usam **dados de exemplo**.
+  Vai ficar conectado à base real da Ouvidoria 4.0 depois.
+
 ## 4. O que é simulado (mock) hoje
 
 - **Análise por IA**: gera um relatório com conteúdo plausível baseado no

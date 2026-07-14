@@ -50,6 +50,7 @@ export function Sidebar() {
           <div className="flex flex-col gap-1">
             <NavLink href="/carta-de-servicos" label="Carta de serviços" />
             <NavLink href="/historico" label="Histórico" />
+            <NavLink href="/ouvidoria/dashboard" label="Dashboard da Ouvidoria 4.0" />
           </div>
         </div>
 
