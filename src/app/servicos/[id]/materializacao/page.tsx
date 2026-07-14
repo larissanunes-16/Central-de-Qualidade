@@ -20,6 +20,7 @@ export default function MaterializacaoPage({ params }: { params: { id: string } 
   const [comparativoDepois, setComparativoDepois] = useState("");
   const [concluindo, setConcluindo] = useState(false);
   const [erroModal, setErroModal] = useState<string | null>(null);
+  const [gerandoComparativo, setGerandoComparativo] = useState(false);
 
   useEffect(() => {
     fetch(`/api/servicos/${params.id}`)
@@ -60,6 +61,23 @@ export default function MaterializacaoPage({ params }: { params: { id: string } 
     }
     setErro(null);
     setCards((atual) => atual.map((c) => (c.id === cardId ? data : c)));
+  }
+
+  async function gerarComparativoComIa() {
+    if (!ciclo) return;
+    setGerandoComparativo(true);
+    setErroModal(null);
+    try {
+      const res = await fetch(`/api/ciclos/${ciclo.id}/gerar-comparativo`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.erro);
+      setComparativoAntes(data.comparativoAntes);
+      setComparativoDepois(data.comparativoDepois);
+    } catch (error) {
+      setErroModal(error instanceof Error ? error.message : "Não foi possível gerar o comparativo com IA.");
+    } finally {
+      setGerandoComparativo(false);
+    }
   }
 
   async function confirmarConclusao() {
@@ -130,7 +148,16 @@ export default function MaterializacaoPage({ params }: { params: { id: string } 
 
       <Modal aberto={modalAberto} titulo="Concluir ciclo" onFechar={() => setModalAberto(false)}>
         <div className="flex flex-col gap-3">
-          <p className="text-sm text-slate-500">Descreva o comparativo antes/depois para arquivar este ciclo.</p>
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm text-slate-500">Descreva o comparativo antes/depois para arquivar este ciclo.</p>
+            <button
+              onClick={gerarComparativoComIa}
+              disabled={gerandoComparativo}
+              className="shrink-0 rounded-lg border border-brand-300 px-3 py-1.5 text-xs font-semibold text-brand-700 hover:bg-brand-50 disabled:opacity-50"
+            >
+              {gerandoComparativo ? "Gerando..." : "Gerar com IA"}
+            </button>
+          </div>
           <div>
             <label className="text-sm font-medium text-slate-700">Antes</label>
             <textarea value={comparativoAntes} onChange={(e) => setComparativoAntes(e.target.value)} rows={3} className="mt-1 w-full rounded-lg border border-slate-200 p-2 text-sm" />

@@ -91,7 +91,10 @@ Usuários já cadastrados (seed):
 - Troque para o responsável (ou para a Fernanda, que é Gestora) e
   conclua o card.
 - Repita até 100% dos cards — o botão **"Concluir ciclo"** deve aparecer.
-- Preencha o comparativo antes/depois e confirme.
+- No modal, clique em **"Gerar com IA"** — os campos Antes/Depois são
+  preenchidos automaticamente a partir dos pontos de falha do relatório
+  e das melhorias concluídas neste ciclo. O texto continua editável;
+  ajuste se quiser e confirme.
 
 ### 3.5 Histórico (`/historico`)
 - O serviço concluído deve aparecer com a linha do tempo completa e o
