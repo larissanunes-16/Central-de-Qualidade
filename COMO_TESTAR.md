@@ -109,7 +109,10 @@ Usuários já cadastrados (seed):
   diagnóstico seguinte, quando ele for concluído).
 
 ### 3.6 Equipe e Configurações
-- Em `/equipe`, adicione um novo membro (Analista ou Gestor).
+- Em `/equipe`, com o "Usuário atual" em um **Analista**, o formulário de
+  adicionar membro não aparece — só um aviso.
+- Troque para um **Gestor** — o formulário aparece e você pode adicionar
+  um novo membro (Analista ou Gestor).
 - Em `/configuracoes`, confira a lista de secretarias cadastradas.
 
 ### 3.7 Dashboard da Ouvidoria 4.0 (`/ouvidoria/dashboard`)

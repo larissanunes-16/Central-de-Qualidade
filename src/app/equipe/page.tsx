@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useUsuarioAtual } from "@/components/UsuarioAtualProvider";
 import type { Usuario } from "@/types";
 
 export default function EquipePage() {
+  const { usuarioAtual, usuarioAtualId } = useUsuarioAtual();
+  const ehGestor = usuarioAtual?.papel === "GESTOR";
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
@@ -23,7 +26,7 @@ export default function EquipePage() {
     const res = await fetch("/api/usuarios", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome, email, papel }),
+      body: JSON.stringify({ nome, email, papel, usuarioAtualId }),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -43,26 +46,32 @@ export default function EquipePage() {
         <p className="text-sm text-slate-500">Gerenciamento de membros da Central de Qualidade.</p>
       </div>
 
-      <div className="flex flex-wrap items-end gap-3 rounded-xl border border-slate-200 bg-white p-4">
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-slate-600">Nome</label>
-          <input value={nome} onChange={(e) => setNome(e.target.value)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+      {ehGestor ? (
+        <div className="flex flex-wrap items-end gap-3 rounded-xl border border-slate-200 bg-white p-4">
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-slate-600">Nome</label>
+            <input value={nome} onChange={(e) => setNome(e.target.value)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-slate-600">E-mail (usuário de rede)</label>
+            <input value={email} onChange={(e) => setEmail(e.target.value)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-slate-600">Papel</label>
+            <select value={papel} onChange={(e) => setPapel(e.target.value as "ANALISTA" | "GESTOR")} className="rounded-lg border border-slate-200 px-3 py-2 text-sm">
+              <option value="ANALISTA">Analista</option>
+              <option value="GESTOR">Gestor</option>
+            </select>
+          </div>
+          <button onClick={adicionarMembro} className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">
+            Adicionar
+          </button>
         </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-slate-600">E-mail (usuário de rede)</label>
-          <input value={email} onChange={(e) => setEmail(e.target.value)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-slate-600">Papel</label>
-          <select value={papel} onChange={(e) => setPapel(e.target.value as "ANALISTA" | "GESTOR")} className="rounded-lg border border-slate-200 px-3 py-2 text-sm">
-            <option value="ANALISTA">Analista</option>
-            <option value="GESTOR">Gestor</option>
-          </select>
-        </div>
-        <button onClick={adicionarMembro} className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">
-          Adicionar
-        </button>
-      </div>
+      ) : (
+        <p className="rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-500">
+          Apenas um gestor pode adicionar membros à equipe.
+        </p>
+      )}
       {erro && <p className="text-sm text-red-600">{erro}</p>}
 
       <div className="rounded-xl border border-slate-200 bg-white">

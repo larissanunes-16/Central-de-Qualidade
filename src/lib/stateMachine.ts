@@ -52,10 +52,10 @@ export function assertPodeConcluirCiclo(params: { totalCards: number; cardsConcl
   }
 }
 
-export function assertUsuarioEhGestor(params: { papel: string | null | undefined }) {
-  // Apenas um gestor pode concluir o ciclo (arquivar e gerar o comparativo antes/depois).
+export function assertUsuarioEhGestor(params: { papel: string | null | undefined; mensagem?: string }) {
+  // Usado para ações restritas a gestor: concluir o ciclo, adicionar membros à equipe, etc.
   if (params.papel !== "GESTOR") {
-    throw new RegraNegocioError("Apenas um gestor pode concluir o ciclo.");
+    throw new RegraNegocioError(params.mensagem ?? "Apenas um gestor pode realizar esta ação.");
   }
 }
 

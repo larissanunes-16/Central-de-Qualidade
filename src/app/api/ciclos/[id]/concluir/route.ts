@@ -22,7 +22,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
   try {
     // Apenas um gestor pode concluir o ciclo (o card em si pode ser concluído por qualquer analista ou gestor).
-    assertUsuarioEhGestor({ papel: usuarioAtual?.papel });
+    assertUsuarioEhGestor({ papel: usuarioAtual?.papel, mensagem: "Apenas um gestor pode concluir o ciclo." });
 
     const cardsConcluidos = ciclo.cards.filter((c) => c.estado === "CONCLUIDO").length;
     assertPodeConcluirCiclo({ totalCards: ciclo.cards.length, cardsConcluidos });
